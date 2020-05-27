@@ -32,6 +32,8 @@ jobs:
           diff-search: true
           file-name: package.json
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print
         run: 'echo "version: ${{ outputs.version }} (${{ outputs.type }})"'
 
       - name: Version update detected
