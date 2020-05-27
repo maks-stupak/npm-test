@@ -1,24 +1,74 @@
-name: npm-publish
-
-on: [push]
+name: Auto-publish
+on: push
 
 jobs:
-  npm-publish:
-    name: npm-publish
+  # build:
+  #   name: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '12.x'
+  #     - run: npm install
+  #     - run: npm build
+
+
+
+  publish:
+    name: Publish to NPM & GitHub Package Registry
     runs-on: ubuntu-latest
+    # needs: build # We need to wait for the build to be committed before publishing
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@master
-    - name: Set up Node.js
-      uses: actions/setup-node@master
-      with:
-        node-version: 10.0.0
-    - name: Publish if version has been updated
-      uses: pascalgn/npm-publish-action@4f4bf159e299f65d21cd1cbd96fc5d53228036df
-      with: # All of theses inputs are optional
-        tag_name: "v%s"
-        tag_message: "v%s"
-        commit_pattern: "^Release (\\S+)"
-      env: # More info about the environment variables in the README
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }} # You need to set this in your repo settings
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check if version has been updated # You can edit this
+        id: check # This will be the reference for getting the outputs
+        uses: EndBug/version-check@v1 # You can choose the version/branch you prefer
+        with: # You can find more info about inputs below
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print
+        run: 'echo "version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
+      - name: Version update detected
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
+      - name: Set up Node.js for NPM
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        if: steps.check.outputs.changed == 'true'
+        run: npm install --only=prod
+
+      - name: Publish package to NPM
+        if: steps.check.outputs.changed == 'true'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Set up Node.js for GPR
+        if: steps.check.outputs.changed == 'true'
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@endbug"
+
+      - name: Set up package for GPR # You need to make sure you package name has the scope needed for GPR
+        if: steps.check.outputs.changed == 'true'
+        run: npm run gpr-setup
+
+      - name: Publish package to GPR
+        if: steps.check.outputs.changed == 'true'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
