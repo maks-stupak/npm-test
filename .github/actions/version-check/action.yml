@@ -24,7 +24,7 @@ outputs:
 
 runs:
   using: node12
-  main: ".github/lib/index.js"
+  main: "lib/index.js"
 
 branding:
   icon: package
