@@ -25,10 +25,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check if version has been updated # You can edit this
-        id: check # This will be the reference for getting the outputs
-        uses: ./.github/actions/version-check # You can choose the version/branch you prefer
-        with: # You can find more info about inputs below
+      - name: Check if version has been updated
+        id: check
+        uses: ./.github/actions/version-check
+        with:
           diff-search: true
           file-name: package.json
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -56,19 +56,19 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Set up Node.js for GPR
-        if: steps.check.outputs.changed == 'true'
-        uses: actions/setup-node@v1
-        with:
-          registry-url: "https://npm.pkg.github.com/"
-          scope: "@endbug"
+      # - name: Set up Node.js for GPR
+      #   if: steps.check.outputs.changed == 'true'
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     registry-url: "https://npm.pkg.github.com/"
+      #     scope: "@endbug"
 
-      - name: Set up package for GPR # You need to make sure you package name has the scope needed for GPR
-        if: steps.check.outputs.changed == 'true'
-        run: npm run gpr-setup
+      # - name: Set up package for GPR # You need to make sure you package name has the scope needed for GPR
+      #   if: steps.check.outputs.changed == 'true'
+      #   run: npm run gpr-setup
 
-      - name: Publish package to GPR
-        if: steps.check.outputs.changed == 'true'
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish package to GPR
+      #   if: steps.check.outputs.changed == 'true'
+      #   run: npm publish
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
