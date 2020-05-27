@@ -2,17 +2,17 @@ name: Auto-publish
 on: push
 
 jobs:
-  build:
-    name: build
-    runs-on: ubuntu-latest
+  # build:
+  #   name: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
-      - run: npm install
-      - run: npm build
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '12.x'
+  #     - run: npm install
+  #     - run: npm build
 
 
 
@@ -27,12 +27,16 @@ jobs:
         with:
           ref: master
 
-      - name: Check version changes
-        uses: EndBug/version-check@v1
-        id: check
+      - name: Check if version has been updated # You can edit this
+        id: check # This will be the reference for getting the outputs
+        uses: EndBug/version-check@v1 # You can choose the version/branch you prefer
+        with: # You can find more info about inputs below
+          diff-search: true
+          file-name: package.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print
-        run: 'echo JSON.stringify(steps.check)'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
 
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
