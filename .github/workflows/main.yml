@@ -27,7 +27,7 @@ jobs:
 
       - name: Check if version has been updated # You can edit this
         id: check # This will be the reference for getting the outputs
-        uses: EndBug/version-check@v1 # You can choose the version/branch you prefer
+        uses: ./.github/actions/version-check # You can choose the version/branch you prefer
         with: # You can find more info about inputs below
           diff-search: true
           file-name: package.json
