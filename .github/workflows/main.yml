@@ -32,7 +32,7 @@ jobs:
         id: check
 
       - name: Print
-        run: 'echo "check: ${{ JSON.stringify(steps.check) }} \n outputs: ${{ JSON.stringify(steps.check.outputs) }}"'
+        run: 'echo JSON.stringify(steps.check)'
 
       - name: Version update detected
         if: steps.check.outputs.changed == 'true'
