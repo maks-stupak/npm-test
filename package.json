@@ -1,6 +1,6 @@
 {
   "name": "test-publish-package-template",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "",
   "main": "gulpfile.js",
   "scripts": {
@@ -10,7 +10,6 @@
     "test": "editorconfig-cli && stylelint ./src/styles/**/*.scss --syntax scss && eslint ./src/js",
     "stylelint-fix": "stylelint ./src/styles/**/*.scss --fix --syntax scss",
     "eslint-fix": "eslint ./src/js/** --fix"
-
   },
   "keywords": [],
   "author": "Maks Stupak",
