@@ -1,5 +1,7 @@
 name: Auto-publish
-on: push
+on:
+  label:
+    types: [created, edited, deleted]
 
 jobs:
   bump-version:
