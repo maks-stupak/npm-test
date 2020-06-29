@@ -1,7 +1,6 @@
 name: Auto-publish
 on:
-  label:
-    types: [created, edited, deleted]
+  label
 
 jobs:
   bump-version:
@@ -20,6 +19,7 @@ jobs:
         with:
           node-version: 12
       - name: "Automated Version Bump"
+        if: ${{ github.event.label.name == 'patch' || github.event.label.name == 'minor' }}
         uses: "phips28/gh-action-bump-version@master"
         with:
           tag-prefix: ''
